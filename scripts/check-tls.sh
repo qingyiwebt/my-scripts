@@ -19,6 +19,7 @@ usage() {
   echo "Options:"
   echo "  -c, --connect <IP>   使用某个 IP 地址连接到服务器."
   echo "  -6                   使用 IPv6 连接."
+  echo "  -4                   使用 IPv4 连接."
   echo "  --tls1.0             检测 TLS 1.0 协议."
   echo "  --tls1.1             检测 TLS 1.1 协议."
   echo "  --tls1.2             检测 TLS 1.2 协议."
@@ -32,62 +33,79 @@ usage() {
 }
 
 check_tls10() {
-    combined_opts=(-svo /dev/null $url --tlsv1.0 --tls-max '1.0')
+    local combined_opts=(-svo /dev/null $url --tlsv1.0 --tls-max '1.0')
+    combined_opts+=($curl_options)
     if [ ! -z $connect_ip ]; then
-        combined_opts+=(--connect-to $connect_ip)
+        combined_opts+=(--connect-to ::$connect_ip)
     fi
-    if [ ! $use_ipv6 ]; then
+    if $use_ipv6; then
         combined_opts+=(-6)
     fi
-    if [ $use_color ]; then
-        color_on=$RED
-        color_off=$NC
+    if $use_ipv4; then
+        combined_opts+=(-4)
     fi
+    if $use_color; then
+        local color_on=$RED
+        local color_off=$NC
+    fi
+
     curl ${combined_opts[@]} 2>&1 | awk -v color_on="${color_on}" -v color_off="${color_off}" '{print color_on "[TLS1.0]" color_off " " $0}'
 }
 
 check_tls11() {
-    combined_opts=(-svo /dev/null $url --tlsv1.1 --tls-max '1.1')
+    local combined_opts=(-svo /dev/null $url --tlsv1.1 --tls-max '1.1')
+    combined_opts+=($curl_options)
     if [ ! -z $connect_ip ]; then
-        combined_opts+=(--connect-to $connect_ip)
+        combined_opts+=(--connect-to ::$connect_ip)
     fi
-    if [ ! -z $use_ipv6 ]; then
+    if $use_ipv6; then
         combined_opts+=(-6)
     fi
-    if [ $use_color ]; then
-        color_on=$GREEN
-        color_off=$NC
+    if $use_ipv4; then
+        combined_opts+=(-4)
+    fi
+    if $use_color; then
+        local color_on=$GREEN
+        local color_off=$NC
     fi
     curl ${combined_opts[@]} 2>&1 | awk -v color_on="${color_on}" -v color_off="${color_off}" '{print color_on "[TLS1.1]" color_off " " $0}'
 }
 
 check_tls12() {
-    combined_opts=(-svo /dev/null $url --tlsv1.2 --tls-max '1.2')
+    local combined_opts=(-svo /dev/null $url --tlsv1.2 --tls-max '1.2')
+    combined_opts+=($curl_options)
     if [ ! -z $connect_ip ]; then
-        combined_opts+=(--connect-to $connect_ip)
+        combined_opts+=(--connect-to ::$connect_ip)
     fi
-    if [ ! -z $use_ipv6 ]; then
+    if $use_ipv6; then
         combined_opts+=(-6)
     fi
-    if [ $use_color ]; then
-        color_on=$YELLOW
-        color_off=$NC
+    if $use_ipv4; then
+        combined_opts+=(-4)
+    fi
+    if $use_color; then
+        local color_on=$YELLOW
+        local color_off=$NC
     fi
     curl ${combined_opts[@]} 2>&1 | awk -v color_on="${color_on}" -v color_off="${color_off}" '{print color_on "[TLS1.2]" color_off " " $0}'
 }
 
 
 check_tls13() {
-    combined_opts=(-svo /dev/null $url --tlsv1.3 --tls-max '1.3')
+    local combined_opts=(-svo /dev/null $url --tlsv1.3 --tls-max '1.3')
+    combined_opts+=($curl_options)
     if [ ! -z $connect_ip ]; then
-        combined_opts+=(--connect-to $connect_ip)
+        combined_opts+=(--connect-to ::$connect_ip)
     fi
-    if [ ! -z $use_ipv6 ]; then
+    if $use_ipv6; then
         combined_opts+=(-6)
     fi
-    if [ $use_color ]; then
-        color_on=$BLUE
-        color_off=$NC
+    if $use_ipv4; then
+        combined_opts+=(-4)
+    fi
+    if $use_color; then
+        local color_on=$BLUE
+        local color_off=$NC
     fi
     curl ${combined_opts[@]} 2>&1 | awk -v color_on="${color_on}" -v color_off="${color_off}" '{print color_on "[TLS1.3]" color_off " " $0}'
 }
@@ -102,6 +120,7 @@ fi
 
 url=""
 connect_ip=""
+use_ipv4=false
 use_ipv6=false
 tls_versions=()
 curl_options=()
@@ -120,6 +139,9 @@ while [[ "$#" -gt 0 ]]; do
             ;;
         -6)
             use_ipv6=true
+            ;;
+        -4)
+            use_ipv4=true
             ;;
         --tls1.0)
             tls_versions+=("tls1")
