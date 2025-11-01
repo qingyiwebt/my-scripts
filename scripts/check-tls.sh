@@ -13,7 +13,7 @@ NC='\033[0m'
 
 # 使用信息
 usage() {
-  echo "Usage: $0 <url> [OPTIONS]"
+  echo "Usage: ./check-tls.sh <url> [OPTIONS]"
   echo "  <url>      要检测的 URL (e.g., https://www.google.com, google.com)"
   echo
   echo "Options:"
@@ -28,7 +28,7 @@ usage() {
   echo "  -h, --help           显示这条帮助消息."
   echo
   echo "Example:"
-  echo "  $0 google.com --tls1.1 --tls1.2"
+  echo "  ./check-tls.sh google.com --tls1.1 --tls1.2"
 }
 
 check_tls10() {

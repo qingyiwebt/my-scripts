@@ -35,7 +35,7 @@ download() {
         curl "$REMOTE_REPO/$script_name" -o $output_path
         chmod +x $output_path
     fi
-    
+
     if [ ! -z $output_path_var ]; then
         eval "$output_path_var=\"$output_path\""
     fi
@@ -57,6 +57,6 @@ case "$action" in
         ;;
     *)
         download $action script_output_path
-        . $script_output_path ${@:2}
+        exec $script_output_path ${@:2}
         ;;
 esac
