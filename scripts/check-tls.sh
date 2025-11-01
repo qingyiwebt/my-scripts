@@ -100,8 +100,6 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-original_args=_"$@"_
-
 url=""
 connect_ip=""
 use_ipv6=false
